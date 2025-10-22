@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Product Enquiry Portal</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background: #f7faff;
+      margin: 0;
+      padding: 0;
+    }
+    .container {
+      max-width: 520px;
+      margin: 40px auto;
+      background: #fff;
+      border-radius: 8px;
+      box-shadow: 0 0 14px rgba(0,0,0,0.08);
+      padding: 2rem 2.5rem;
+    }
+    h1 {
+      font-size: 1.6rem;
+      color: #2962FF;
+      margin-bottom: 18px;
+      font-weight: 600;
+    }
+    label {
+      display: block;
+      font-weight: 500;
+      margin-bottom: 7px;
+      color: #343a40;
+    }
+    select, input, textarea {
+      width: 100%;
+      padding: 9px;
+      margin-bottom: 18px;
+      border: 1px solid #bfc9db;
+      border-radius: 5px;
+      font-size: 1rem;
+      box-sizing: border-box;
+      background: #eef2f7;
+      transition: border 0.2s;
+    }
+    input:invalid, textarea:invalid {
+      border-color: #f44336;
+    }
+    select:disabled {
+      background: #e0e0e0;
+    }
+    .form-row {
+      margin-bottom: 14px;
+    }
+    button {
+      width: 100%;
+      padding: 11px;
+      background: #2962FF;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      font-weight: 600;
+      font-size: 1.10rem;
+      cursor: pointer;
+      transition: background 0.2s;
+      margin-top: 10px;
+    }
+    button:disabled {
+      background: #bfc9db;
+      cursor: not-allowed;
+    }
+    @media (max-width: 600px) {
+      .container {
+        padding: 1rem;
+      }
+    }
+    .note {
+      font-size: 0.97rem;
+      color: #62666a;
+      margin-bottom: 22px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Product Enquiry Form</h1>
+    <div class="note">
+      Select below drop down option to create enquiry for required product.<br>
+      All fields are mandatory.
+    </div>
+    <form id="enquiryForm" autocomplete="off">
+      <div class="form-row">
+        <label for="machine">Machine Name</label>
+        <select id="machine" required>
+          <option value="">Select machine</option>
+        </select>
+      </div>
+      <div class="form-row">
+        <label for="part">Parts</label>
+        <select id="part" required disabled>
+          <option value="">Select part</option>
+        </select>
+      </div>
+      <div class="form-row">
+        <label for="quantity">Quantity</label>
+        <input type="number" min="1" id="quantity" placeholder="Enter quantity" required/>
+      </div>
+      <div class="form-row">
+        <label for="vendor">Vendor Name</label>
+        <input type="text" id="vendor" placeholder="Vendor name" required/>
+      </div>
+      <div class="form-row">
+        <label for="contact">Contact Number</label>
+        <input type="tel" id="contact" pattern="^[0-9]{10,13}$" placeholder="Contact number" required/>
+      </div>
+      <div class="form-row">
+        <label for="mail">Mail Id</label>
+        <input type="email" id="mail" placeholder="Email address" required/>
+      </div>
+      <div class="form-row">
+        <label for="address">Address</label>
+        <textarea id="address" rows="2" placeholder="Address" required></textarea>
+      </div>
+      <button type="submit" id="submitBtn" disabled>Submit</button>
+    </form>
+  </div>
+
+  <script>
+    // Static data, should be fetched from backend/Excel via AJAX/rest API in production.
+    // Based on 'ProductData.xlsx' contents
+    const productData = {
+      'CNC Machining Center': [
+        'Spindle motor and drive',
+        'Tool turret and automatic changer',
+        'Linear guideways and ball screws',
+        'Control panel with CNC controller unit',
+        'Coolant and chip evacuation system'
+      ],
+      'Five-Axis Milling Machine': [
+        'Rotary and tilting tables for multi-axis movement',
+        'High-speed spindle assembly',
+        'Fixture clamps and workholding setup',
+        'Servo motors and encoders'
+      ],
+      'Rotor Balancing Machine': [
+        'Drive motor and belt assembly',
+        'Balancing shaft and supports',
+        'Vibration sensors accelerometers',
+        'Control console with balancing software'
+      ],
+      'Die Casting and Pressing Machine': [
+        'Hydraulic press cylinders',
+        'Die mold fixed and movable halves',
+        'Injection plunger system',
+        'Temperature control unit'
+      ],
+      'Rotor Assembly and Testing Rig': [
+        'Assembly jig and alignment fixtures',
+        'Torque wrenches and tightening sensors',
+        'Hydraulic test bench for swashplate control system',
+        'Bearing preload measurement gauges',
+        'Rotational test stand and safety enclosure'
+      ]
+    };
+
+    // Populate machines
+    const machineDrop = document.getElementById('machine');
+    Object.keys(productData).forEach(machine => {
+      const opt = document.createElement('option');
+      opt.value = machine;
+      opt.innerText = machine;
+      machineDrop.appendChild(opt);
+    });
+
+    // Populate parts based on selected machine
+    machineDrop.addEventListener('change', function() {
+      const partDrop = document.getElementById('part');
+      partDrop.innerHTML = '<option value="">Select part</option>';
+      if (this.value) {
+        productData[this.value].forEach(part => {
+          const opt = document.createElement('option');
+          opt.value = part;
+          opt.innerText = part;
+          partDrop.appendChild(opt);
+        });
+        partDrop.disabled = false;
+      } else {
+        partDrop.disabled = true;
+      }
+      validateForm(); // In case reset disables submitBtn
+    });
+
+    // Enable submit only if all required fields filled
+    function validateForm() {
+      const machine = machineDrop.value;
+      const part = document.getElementById('part').value;
+      const quantity = document.getElementById('quantity').value;
+      const vendor = document.getElementById('vendor').value;
+      const contact = document.getElementById('contact').value;
+      const mail = document.getElementById('mail').value;
+      const address = document.getElementById('address').value;
+
+      // Simple checks
+      let valid = machine && part && quantity && vendor && contact && mail && address;
+      // Quantity positive integer
+      valid = valid && Number(quantity) > 0;
+      // Contact number pattern (10-13 digits)
+      valid = valid && /^\d{10,13}$/.test(contact);
+      // Basic email format
+      valid = valid && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(mail);
+
+      document.getElementById('submitBtn').disabled = !valid;
+    }
+
+    document.querySelectorAll('input,select,textarea').forEach(el => {
+      el.addEventListener('input', validateForm);
+      el.addEventListener('change', validateForm);
+    });
+
+    // On submit: send data to backend, append to 'Enquiries' sheet, reset form
+    document.getElementById('enquiryForm').addEventListener('submit', function(e){
+      e.preventDefault();
+      // Collect values
+      const formData = {
+        VendorName: document.getElementById('vendor').value,
+        parts: document.getElementById('part').value,
+        Quantity: document.getElementById('quantity').value,
+        ContactNO: document.getElementById('contact').value,
+        MailId: document.getElementById('mail').value,
+        Address: document.getElementById('address').value
+      };
+
+		// Replace with Google Apps Script Web App URL
+		const scriptURL = "https://script.google.com/macros/s/AKfycbxneUFZacsS5WXRzmr472oTzC9abaWpx8VtNZ7iT0vhv-KUB4JEx9IabmO2Hst20rGg/exec";
+
+		document.getElementById("enquiryForm").addEventListener("submit", function(e) {
+		  e.preventDefault();
+
+		  const formData = new FormData();
+		  formData.append("VendorName", document.getElementById("vendor").value);
+		  formData.append("Parts", document.getElementById("part").value);
+		  formData.append("Quantity", document.getElementById("quantity").value);
+		  formData.append("ContactNO", document.getElementById("contact").value);
+		  formData.append("MailId", document.getElementById("mail").value);
+		  formData.append("Address", document.getElementById("address").value);
+
+		  fetch(scriptURL, { method: "POST", body: formData })
+			.then(response => {
+			  alert('Enquiry Submitted Successfully!');
+			  e.target.reset();
+			  document.getElementById('part').disabled = true;
+			  document.getElementById('submitBtn').disabled = true;
+			})
+			.catch(error => alert("Submission Failed: " + error.message));
+		});
+
+      // For demo, just alert and reset
+      alert('Enquiry Submitted!');
+
+      // Reset form
+      this.reset();
+      document.getElementById('part').disabled = true;
+      document.getElementById('submitBtn').disabled = true;
+    });
+  </script>
+</body>
+</html>
