@@ -229,30 +229,6 @@
         Address: document.getElementById('address').value
       };
 
-		// Replace with Google Apps Script Web App URL
-		const scriptURL = "https://script.google.com/macros/s/AKfycbxneUFZacsS5WXRzmr472oTzC9abaWpx8VtNZ7iT0vhv-KUB4JEx9IabmO2Hst20rGg/exec";
-
-		document.getElementById("enquiryForm").addEventListener("submit", function(e) {
-		  e.preventDefault();
-
-		  const formData = new FormData();
-		  formData.append("VendorName", document.getElementById("vendor").value);
-		  formData.append("Parts", document.getElementById("part").value);
-		  formData.append("Quantity", document.getElementById("quantity").value);
-		  formData.append("ContactNO", document.getElementById("contact").value);
-		  formData.append("MailId", document.getElementById("mail").value);
-		  formData.append("Address", document.getElementById("address").value);
-
-		  fetch(scriptURL, { method: "POST", body: formData })
-			.then(response => {
-			  alert('Enquiry Submitted Successfully!');
-			  e.target.reset();
-			  document.getElementById('part').disabled = true;
-			  document.getElementById('submitBtn').disabled = true;
-			})
-			.catch(error => alert("Submission Failed: " + error.message));
-		});
-
       // For demo, just alert and reset
       alert('Enquiry Submitted!');
 
@@ -265,5 +241,6 @@
 </body>
 
 </html>
+
 
 
