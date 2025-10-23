@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Product Enquiry Portal</title>
   <style>
     body {
@@ -59,7 +59,7 @@
       border: none;
       border-radius: 5px;
       font-weight: 600;
-      font-size: 1.10rem;
+      font-size: 1.1rem;
       cursor: pointer;
       transition: background 0.2s;
       margin-top: 10px;
@@ -69,24 +69,57 @@
       cursor: not-allowed;
     }
     @media (max-width: 600px) {
-      .container {
-        padding: 1rem;
-      }
+      .container { padding: 1rem; }
     }
     .note {
       font-size: 0.97rem;
       color: #62666a;
       margin-bottom: 22px;
     }
+	table {
+	  width: 96%;
+	  margin: 20px auto;
+	  border-collapse: collapse;
+	  text-align: center; /* Center-aligns all cells */
+	  background: #fff;
+	}
+
+	th, td {
+	  border: 1px solid #bcc6d6;
+	  padding: 10px 8px;
+	  vertical-align: middle;
+	  text-align: center;
+	}
+
+	thead th {
+	  background: #e3edff;
+	  font-weight: bold;
+	}
+
+	tbody td {
+	  background: #fafbfe;
+	}
+
+	/* Optional: If you want to left-align Vendor, Mail, Address columns */
+	td:nth-child(4), td:nth-child(6), td:nth-child(7) {
+	  text-align: left;
+	}
+
+	/* Alternate row colors for readability */
+	tbody tr:nth-child(even) {
+	  background: #f4f8fd;
+	}
+
   </style>
 </head>
 <body>
   <div class="container">
     <h1>Product Enquiry Form</h1>
     <div class="note">
-      Select below drop down option to create enquiry for required product.<br>
+      Select below drop down option to create enquiry for required product.<br />
       All fields are mandatory.
     </div>
+
     <form id="enquiryForm" autocomplete="off">
       <div class="form-row">
         <label for="machine">Machine Name</label>
@@ -94,153 +127,178 @@
           <option value="">Select machine</option>
         </select>
       </div>
+
       <div class="form-row">
         <label for="part">Parts</label>
         <select id="part" required disabled>
           <option value="">Select part</option>
         </select>
       </div>
+
       <div class="form-row">
         <label for="quantity">Quantity</label>
-        <input type="number" min="1" id="quantity" placeholder="Enter quantity" required/>
+        <input type="number" min="1" id="quantity" placeholder="Enter quantity" required />
       </div>
+
       <div class="form-row">
         <label for="vendor">Vendor Name</label>
-        <input type="text" id="vendor" placeholder="Vendor name" required/>
+        <input type="text" id="vendor" placeholder="Vendor name" required />
       </div>
+
       <div class="form-row">
         <label for="contact">Contact Number</label>
-        <input type="tel" id="contact" pattern="^[0-9]{10,13}$" placeholder="Contact number" required/>
+        <input type="tel" id="contact" pattern="^[0-9]{10,13}$" placeholder="Contact number" required />
       </div>
+
       <div class="form-row">
         <label for="mail">Mail Id</label>
-        <input type="email" id="mail" placeholder="Email address" required/>
+        <input type="email" id="mail" placeholder="Email address" required />
       </div>
+
       <div class="form-row">
         <label for="address">Address</label>
         <textarea id="address" rows="2" placeholder="Address" required></textarea>
       </div>
+
       <button type="submit" id="submitBtn" disabled>Submit</button>
+
+      <h2 style="text-align:center;color:#2962FF;">Submitted Enquiries</h2>
+      <table id="enquiryTable">
+        <thead>
+          <tr>
+            <th>Machine</th>
+            <th>Part</th>
+            <th>Quantity</th>
+            <th>Vendor</th>
+            <th>Contact</th>
+            <th>Mail</th>
+            <th>Address</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
     </form>
   </div>
 
   <script>
-    // Static data, should be fetched from backend/Excel via AJAX/rest API in production.
-    // Based on 'ProductData.xlsx' contents
+  document.addEventListener("DOMContentLoaded", () => {
+
     const productData = {
-      'CNC Machining Center': [
-        'Spindle motor and drive',
-        'Tool turret and automatic changer',
-        'Linear guideways and ball screws',
-        'Control panel with CNC controller unit',
-        'Coolant and chip evacuation system'
+      "CNC Machining Center": [
+        "Spindle motor and drive",
+        "Tool turret and automatic changer",
+        "Linear guideways and ball screws",
+        "Control panel with CNC controller unit",
+        "Coolant and chip evacuation system"
       ],
-      'Five-Axis Milling Machine': [
-        'Rotary and tilting tables for multi-axis movement',
-        'High-speed spindle assembly',
-        'Fixture clamps and workholding setup',
-        'Servo motors and encoders'
+      "Five-Axis Milling Machine": [
+        "Rotary and tilting tables for multi-axis movement",
+        "High-speed spindle assembly",
+        "Fixture clamps and workholding setup",
+        "Servo motors and encoders"
       ],
-      'Rotor Balancing Machine': [
-        'Drive motor and belt assembly',
-        'Balancing shaft and supports',
-        'Vibration sensors accelerometers',
-        'Control console with balancing software'
+      "Rotor Balancing Machine": [
+        "Drive motor and belt assembly",
+        "Balancing shaft and supports",
+        "Vibration sensors accelerometers",
+        "Control console with balancing software"
       ],
-      'Die Casting and Pressing Machine': [
-        'Hydraulic press cylinders',
-        'Die mold fixed and movable halves',
-        'Injection plunger system',
-        'Temperature control unit'
+      "Die Casting and Pressing Machine": [
+        "Hydraulic press cylinders",
+        "Die mold fixed and movable halves",
+        "Injection plunger system",
+        "Temperature control unit"
       ],
-      'Rotor Assembly and Testing Rig': [
-        'Assembly jig and alignment fixtures',
-        'Torque wrenches and tightening sensors',
-        'Hydraulic test bench for swashplate control system',
-        'Bearing preload measurement gauges',
-        'Rotational test stand and safety enclosure'
+      "Rotor Assembly and Testing Rig": [
+        "Assembly jig and alignment fixtures",
+        "Torque wrenches and tightening sensors",
+        "Hydraulic test bench for swashplate control system",
+        "Bearing preload measurement gauges",
+        "Rotational test stand and safety enclosure"
       ]
     };
 
-    // Populate machines
-    const machineDrop = document.getElementById('machine');
+    const machineDrop = document.getElementById("machine");
+    const partDrop = document.getElementById("part");
+    const submitBtn = document.getElementById("submitBtn");
+
+    // populate machine dropdown
     Object.keys(productData).forEach(machine => {
-      const opt = document.createElement('option');
+      const opt = document.createElement("option");
       opt.value = machine;
-      opt.innerText = machine;
+      opt.textContent = machine;
       machineDrop.appendChild(opt);
     });
 
-    // Populate parts based on selected machine
-    machineDrop.addEventListener('change', function() {
-      const partDrop = document.getElementById('part');
+    // handle machine selection
+    machineDrop.addEventListener("change", function() {
       partDrop.innerHTML = '<option value="">Select part</option>';
       if (this.value) {
         productData[this.value].forEach(part => {
-          const opt = document.createElement('option');
+          const opt = document.createElement("option");
           opt.value = part;
-          opt.innerText = part;
+          opt.textContent = part;
           partDrop.appendChild(opt);
         });
         partDrop.disabled = false;
       } else {
         partDrop.disabled = true;
       }
-      validateForm(); // In case reset disables submitBtn
+      validateForm();
     });
 
-    // Enable submit only if all required fields filled
     function validateForm() {
-      const machine = machineDrop.value;
-      const part = document.getElementById('part').value;
-      const quantity = document.getElementById('quantity').value;
-      const vendor = document.getElementById('vendor').value;
-      const contact = document.getElementById('contact').value;
-      const mail = document.getElementById('mail').value;
-      const address = document.getElementById('address').value;
+      const machine = machineDrop.value.trim();
+      const part = partDrop.value.trim();
+      const quantity = document.getElementById("quantity").value.trim();
+      const vendor = document.getElementById("vendor").value.trim();
+      const contact = document.getElementById("contact").value.trim();
+      const mail = document.getElementById("mail").value.trim();
+      const address = document.getElementById("address").value.trim();
 
-      // Simple checks
       let valid = machine && part && quantity && vendor && contact && mail && address;
-      // Quantity positive integer
       valid = valid && Number(quantity) > 0;
-      // Contact number pattern (10-13 digits)
       valid = valid && /^\d{10,13}$/.test(contact);
-      // Basic email format
       valid = valid && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(mail);
 
-      document.getElementById('submitBtn').disabled = !valid;
+      submitBtn.disabled = !valid;
     }
 
-    document.querySelectorAll('input,select,textarea').forEach(el => {
-      el.addEventListener('input', validateForm);
-      el.addEventListener('change', validateForm);
+    document.querySelectorAll("input, select, textarea").forEach(el => {
+      el.addEventListener("input", validateForm);
+      el.addEventListener("change", validateForm);
     });
 
-    // On submit: send data to backend, append to 'Enquiries' sheet, reset form
-    document.getElementById('enquiryForm').addEventListener('submit', function(e){
+    document.getElementById("enquiryForm").addEventListener("submit", e => {
       e.preventDefault();
-      // Collect values
-      const formData = {
-        VendorName: document.getElementById('vendor').value,
-        parts: document.getElementById('part').value,
-        Quantity: document.getElementById('quantity').value,
-        ContactNO: document.getElementById('contact').value,
-        MailId: document.getElementById('mail').value,
-        Address: document.getElementById('address').value
-      };
 
-      // For demo, just alert and reset
-      alert('Enquiry Submitted!');
+      const machine = machineDrop.value;
+      const part = partDrop.value;
+      const quantity = document.getElementById("quantity").value;
+      const vendor = document.getElementById("vendor").value;
+      const contact = document.getElementById("contact").value;
+      const mail = document.getElementById("mail").value;
+      const address = document.getElementById("address").value;
 
-      // Reset form
-      this.reset();
-      document.getElementById('part').disabled = true;
-      document.getElementById('submitBtn').disabled = true;
+      const tableBody = document.querySelector("#enquiryTable tbody");
+      const row = document.createElement("tr");
+      row.innerHTML = `
+        <td>${machine}</td>
+        <td>${part}</td>
+        <td>${quantity}</td>
+        <td>${vendor}</td>
+        <td>${contact}</td>
+        <td>${mail}</td>
+        <td>${address}</td>
+      `;
+      tableBody.appendChild(row);
+
+      e.target.reset();
+      partDrop.disabled = true;
+      submitBtn.disabled = true;
     });
+
+  });
   </script>
 </body>
-
 </html>
-
-
-
